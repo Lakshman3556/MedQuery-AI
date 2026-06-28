@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Play } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
 
-// Import local meme images from src/assets/memes/
+// Import local meme images
 import absCMeme from "../assets/memes/abs_C.jpg";
 import rajMeme from "../assets/memes/raj.jpg";
 
@@ -17,7 +17,7 @@ const MemeImage = ({ src, alt, fallbackGradient }) => {
     <img
       src={src}
       alt={alt}
-      className="suggestion-card-img"
+      className="meme-suggestion-img"
       onError={() => setHasError(true)}
     />
   );
@@ -38,18 +38,16 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, currentStreamingText]);
 
-  // Only 2 suggestion cards matching English and తెలుగు movies using local meme assets
+  // Two suggestion buttons using raw local meme assets
   const suggestions = [
     {
       title: "English Movies",
-      desc: "Inception Heist rules",
       query: "Explain the rules of dream levels and time dilation in Inception.",
       meme: absCMeme,
       gradient: "grad-blue"
     },
     {
       title: "తెలుగు Movies",
-      desc: "The Kattappa Mystery",
       query: "Why did Kattappa kill Baahubali and what is the reason behind it?",
       meme: rajMeme,
       gradient: "grad-red"
@@ -68,21 +66,13 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
 
             <div className="suggestions-grid suggestions-two-cards">
               {suggestions.map((s, idx) => (
-                <div 
-                  key={idx} 
-                  className="suggestion-card" 
+                <div
+                  key={idx}
+                  className="meme-suggestion-btn"
                   onClick={() => !loading && onSendMessage(s.query)}
+                  title={s.query}
                 >
-                  <div className="suggestion-card-media">
-                    <MemeImage src={s.meme} alt={s.title} fallbackGradient={s.gradient} />
-                    <div className="card-play-overlay">
-                      <Play size={20} fill="white" color="white" />
-                    </div>
-                  </div>
-                  <div className="suggestion-card-info">
-                    <span className="card-tag">{s.title}</span>
-                    <h4 className="card-desc">{s.desc}</h4>
-                  </div>
+                  <MemeImage src={s.meme} alt={s.title} fallbackGradient={s.gradient} />
                 </div>
               ))}
             </div>

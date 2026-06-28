@@ -95,7 +95,7 @@ function App() {
         <div className="footer-disclaimer">
           <ShieldAlert size={14} className="disclaimer-icon" />
           <span>
-            Disclaimer: సినిma AI is an educational RAG prototype for English and తెలుగు movies. It should not be used for actual clinical advice.
+            Disclaimer: BROoooooooooooo nenu  RAG ni I have only minimal content cenima gurinchi in my chromadb kabbati if i give wrong DHOBBAKANDI
           </span>
         </div>
       </footer>
