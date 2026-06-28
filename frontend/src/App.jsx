@@ -70,7 +70,7 @@ function App() {
       <header className="app-header">
         <div className="header-brand">
           <Film className="brand-logo" size={24} />
-          <h1 className="brand-name">సినీma AI</h1>
+          <h1 className="brand-name">సినిma AI</h1>
           <span className="brand-badge">RAG Assistant</span>
         </div>
         <button className="reset-session-btn" type="button" onClick={handleResetSession} title="Reset Conversation Session">
@@ -95,7 +95,7 @@ function App() {
         <div className="footer-disclaimer">
           <ShieldAlert size={14} className="disclaimer-icon" />
           <span>
-            Disclaimer: సినీma AI is an educational RAG prototype for English and తెలుగు movies. It should not be used for actual clinical advice.
+            Disclaimer: సినిma AI is an educational RAG prototype for English and తెలుగు movies. It should not be used for actual clinical advice.
           </span>
         </div>
       </footer>

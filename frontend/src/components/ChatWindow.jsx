@@ -61,7 +61,7 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
       <div className="messages-scroll-area">
         {messages.length === 0 ? (
           <div className="welcome-hero">
-            <h2 className="welcome-title">సినీma AI</h2>
+            <h2 className="welcome-title">సినిma AI</h2>
             <p className="welcome-subtitle">
               Interactive Q&A Search Engine for English and తెలుగు Movies.
             </p>
@@ -99,7 +99,7 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
               <Loader2 className="animate-spin" size={18} />
             </div>
             <div className="message-bubble-content">
-              <div className="message-sender-name">సినీma Assistant</div>
+              <div className="message-sender-name">సినిma Assistant</div>
               <p className="message-text">{currentStreamingText}</p>
             </div>
           </div>

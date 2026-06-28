@@ -53,7 +53,7 @@ export const MessageBubble = ({ message, onCitationClick }) => {
       </div>
       <div className="message-bubble-content">
         <div className="message-sender-name">
-          {isUser ? "Cinephile" : "సినీma Assistant"}
+          {isUser ? "Cinephile" : "సినిma Assistant"}
         </div>
         {renderMessageContent(message.text, message.citations)}
       </div>
