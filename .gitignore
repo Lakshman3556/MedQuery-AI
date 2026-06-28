@@ -17,4 +17,6 @@ backend/chroma_store/
 # IDE settings files
 .vscode/
 .idea/
- 
+
+# Large dataset files
+datasets/

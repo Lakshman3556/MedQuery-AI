@@ -15,9 +15,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 # RAG Configurations
 try:
-    CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.45"))
+    CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.35"))
 except ValueError:
-    CONFIDENCE_THRESHOLD = 0.45
+    CONFIDENCE_THRESHOLD = 0.35
 
 # Resolve ChromaDB Store Directory
 # If path is relative, resolve it relative to the backend folder
@@ -37,9 +37,6 @@ else:
 # Ensure all critical folders are present on startup
 os.makedirs(CHROMA_STORE_DIR, exist_ok=True)
 os.makedirs(KNOWLEDGE_BASE_DIR, exist_ok=True)
-os.makedirs(os.path.join(KNOWLEDGE_BASE_DIR, "drugs"), exist_ok=True)
-os.makedirs(os.path.join(KNOWLEDGE_BASE_DIR, "diseases"), exist_ok=True)
-os.makedirs(os.path.join(KNOWLEDGE_BASE_DIR, "guidelines"), exist_ok=True)
 
 print(f"[CONFIG] Loaded provider: {LLM_PROVIDER}")
 print(f"[CONFIG] Chroma Store path: {CHROMA_STORE_DIR}")

@@ -21,25 +21,26 @@ async def generate_response_stream(
     Assembles context, history, and question, calls the LLM stream,
     and yields SSE events containing tokens and final citations.
     """
-    # 1. Format the context block
+       # 1. Format the context block
     formatted_chunks = []
     citations = []
     for i, chunk in enumerate(context_chunks):
         meta = chunk["metadata"]
-        src = meta.get("source_file", "unknown")
+        # Format citation reference as "Movie Name (Year)" instead of the raw CSV filename
+        citation_ref = f"{meta.get('movie_name')} ({meta.get('year')})"
         col = chunk.get("collection", "unknown")
         text = chunk["text"]
-        formatted_chunks.append(f"Chunk {i+1} [Source: {src}, Collection: {col}]:\n{text}\n")
+        formatted_chunks.append(f"Chunk {i+1} [Source: {citation_ref}, Collection: {col}]:\n{text}\n")
         citations.append({
             "id": chunk["id"],
-            "source_file": src,
+            "source_file": citation_ref,
             "collection": col,
             "text": text,
             "similarity": chunk.get("similarity", 0.0)
         })
         
     context_block = "\n".join(formatted_chunks) if formatted_chunks else "No relevant context found."
-    
+
     # 2. Setup prompt variables
     from backend.prompts.templates import SYSTEM_PROMPT, USER_TEMPLATE
     user_prompt = USER_TEMPLATE.format(
@@ -73,7 +74,7 @@ async def generate_response_stream(
                 ],
                 model="llama-3.3-70b-versatile",
                 max_tokens=600,
-                temperature=0.0,
+                temperature=0.7,
                 stream=True
             )
             async for chunk in stream:

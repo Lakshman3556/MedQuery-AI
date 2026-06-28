@@ -5,48 +5,49 @@ from pydantic import BaseModel, Field
 from typing import Dict, Any
 from backend import config
 from backend.services.embedder import embedder
-from backend.ingestion.loader import get_chroma_client, get_collections, extract_drug_metadata
+from backend.ingestion.loader import get_chroma_client, get_collections
 
 router = APIRouter()
 
 class IngestRequest(BaseModel):
-    collection: str = Field(..., description="ChromaDB collection: 'drugs', 'diseases', or 'guidelines'")
-    text: str = Field(..., description="Medical text to ingest")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Optional metadata fields")
+    collection: str = Field(..., description="ChromaDB collection: 'movies'")
+    text: str = Field(..., description="Cinema/Plot text to ingest")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Optional metadata fields (movie_name, year, industry, director, genre)")
 
 @router.post("/ingest")
 async def ingest_endpoint(request: IngestRequest):
     """
-    POST /ingest endpoint for admins to manually add chunks to ChromaDB.
+    POST /ingest endpoint for admins to manually add movie chunks to ChromaDB.
     """
     col_name = request.collection.strip().lower()
     text = request.text.strip()
     meta = request.metadata
     
-    if col_name not in ["drugs", "diseases", "guidelines"]:
-        raise HTTPException(status_code=400, detail="Collection must be 'drugs', 'diseases', or 'guidelines'.")
+    if col_name != "movies":
+        raise HTTPException(status_code=400, detail="Collection must be 'movies'.")
     if not text:
         raise HTTPException(status_code=400, detail="Text content cannot be empty.")
         
     try:
         client = get_chroma_client()
         collections = get_collections(client)
-        collection = collections[col_name]
+        collection = collections["movies"]
         
         # Setup metadata
-        chunk_id = f"{col_name[:-1] if col_name.endswith('s') else col_name}_{uuid.uuid4()}"
+        chunk_id = f"movie_{uuid.uuid4()}"
         chunk_metadata = {
             "source_file": "admin_api",
-            "collection": col_name,
+            "collection": "movies",
             "chunk_index": 0,
-            "chunk_size": len(text)
+            "chunk_size": len(text),
+            "movie_name": meta.get("movie_name", "Unknown Movie"),
+            "year": int(meta.get("year", 2026)),
+            "industry": meta.get("industry", "Unknown Industry"),
+            "director": meta.get("director", "Unknown Director"),
+            "genre": meta.get("genre", "Unknown Genre")
         }
         
-        # Extract drug details if applicable
-        if col_name == "drugs":
-            chunk_metadata.update(extract_drug_metadata(text))
-            
-        # Update with user provided metadata
+        # Update with user provided metadata overrides
         chunk_metadata.update(meta)
         
         # Generate embedding
@@ -60,11 +61,11 @@ async def ingest_endpoint(request: IngestRequest):
             metadatas=[chunk_metadata]
         )
         
-        print(f"[INGEST] Chunks successfully added to collection '{col_name}' under ID '{chunk_id}'")
+        print(f"[INGEST] Movie chunk successfully added to collection 'movies' under ID '{chunk_id}'")
         return {
             "status": "success",
             "id": chunk_id,
-            "collection": col_name,
+            "collection": "movies",
             "message": "Content successfully ingested and indexed."
         }
     except Exception as e:

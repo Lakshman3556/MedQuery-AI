@@ -7,7 +7,7 @@ def check_confidence(avg_similarity: float, threshold: float = 0.45) -> Dict[str
     """
     if avg_similarity < threshold:
         return {
-            "answer": "I could not find reliable information on this in my knowledge base.",
+            "answer": "I could not find reliable information on this in my cinema database.",
             "citations": [],
             "refused": True
         }

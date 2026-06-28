@@ -17,7 +17,8 @@ def rewrite_query(query: str) -> str:
     if not query.strip():
         return query
         
-    prompt = f"Rewrite this medical query for clarity and optimal semantic search retrieval. Return ONLY the rewritten query text and nothing else: {query}"
+    prompt = f"Rewrite this movie/cinema search query for clarity and optimal semantic search retrieval. Return ONLY the rewritten query text and nothing else: {query}"
+
     
     try:
         if config.LLM_PROVIDER == "gemini":
