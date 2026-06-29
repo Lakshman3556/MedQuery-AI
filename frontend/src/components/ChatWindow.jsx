@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Film } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
 
 // Import local meme images
@@ -69,8 +69,6 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
                 <div
                   key={idx}
                   className="meme-suggestion-btn"
-                  onClick={() => !loading && onSendMessage(s.query)}
-                  title={s.query}
                 >
                   <MemeImage src={s.meme} alt={s.title} fallbackGradient={s.gradient} />
                 </div>
@@ -86,7 +84,7 @@ export const ChatWindow = ({ messages, onSendMessage, loading, currentStreamingT
         {currentStreamingText && (
           <div className="message-wrapper assistant-msg streaming">
             <div className="message-avatar">
-              <Loader2 className="animate-spin" size={18} />
+              <Film size={18} />
             </div>
             <div className="message-bubble-content">
               <div className="message-sender-name">సినిma Assistant</div>
