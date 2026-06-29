@@ -51,7 +51,7 @@ def download_and_extract_db():
                 pass
 
     direct_url = get_direct_download_url(db_url)
-    print(f"[STARTUP] Pre-built database not found. Downloading from URL: {direct_url}...")
+    print(f"[STARTUP] Pre-built database not found. Downloading from URL: {direct_url}...", flush=True)
     try:
         os.makedirs(config.CHROMA_STORE_DIR, exist_ok=True)
         
@@ -67,15 +67,23 @@ def download_and_extract_db():
             confirm_match = re.search(r"confirm=([a-zA-Z0-9_-]+)", html_content)
             if confirm_match:
                 confirm_token = confirm_match.group(1)
-                print(f"[STARTUP] Large file warning detected. Retrying with Google Drive confirmation token: {confirm_token}")
+                print(f"[STARTUP] Large file warning detected. Retrying with Google Drive confirmation token: {confirm_token}", flush=True)
                 confirm_url = direct_url + f"&confirm={confirm_token}"
                 req = urllib.request.Request(confirm_url, headers=headers)
                 with urllib.request.urlopen(req) as response:
                     file_data = response.read()
 
+        # If the file data starts with '<!DOCTYPE' or '<html', it's an HTML page (like a login or error page), not a ZIP/database
+        if file_data.strip().startswith(b"<") or b"html" in file_data[:50].lower():
+            raise ValueError(
+                "Downloaded content is HTML (likely a Google Login, sharing restriction page, or 404 error) "
+                "instead of a valid zip or sqlite file. Please check that your CHROMA_DB_URL is public "
+                "('Anyone with the link can view') and that the link is correct."
+            )
+
         # Check if the downloaded file is a ZIP archive (starts with 'PK\x03\x04')
         if file_data.startswith(b"PK\x03\x04"):
-            print("[STARTUP] Download complete. Unpacking zip database archive...")
+            print("[STARTUP] Download complete. Unpacking zip database archive...", flush=True)
             with zipfile.ZipFile(io.BytesIO(file_data)) as z:
                 z.extractall(config.CHROMA_STORE_DIR)
                 
@@ -97,16 +105,18 @@ def download_and_extract_db():
                                 os.remove(d_path)
                         os.rename(s_path, d_path)
                     shutil.rmtree(source_folder)
-            print(f"[STARTUP] Database unpacked successfully into '{config.CHROMA_STORE_DIR}'!")
+            print(f"[STARTUP] Database unpacked successfully into '{config.CHROMA_STORE_DIR}'!", flush=True)
         else:
             # Assume direct sqlite file
-            print("[STARTUP] Download complete. Writing sqlite database file directly...")
+            print("[STARTUP] Download complete. Writing sqlite database file directly...", flush=True)
             with open(sqlite_path, "wb") as f:
                 f.write(file_data)
-            print(f"[STARTUP] Database file written successfully to '{sqlite_path}'!")
+            print(f"[STARTUP] Database file written successfully to '{sqlite_path}'!", flush=True)
             
     except Exception as e:
-        print(f"[STARTUP] Error downloading/unpacking database: {e}")
+        print(f"[STARTUP] CRITICAL ERROR downloading/unpacking database: {e}", flush=True)
+        # Raise it so the application crashes with a clear message in Hugging Face logs
+        raise e
 
 # Download database before importing routers, which initialize retriever and connect to ChromaDB
 download_and_extract_db()
