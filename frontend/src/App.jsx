@@ -8,12 +8,14 @@ const generateUUID = () => {
   return "session-" + Math.random().toString(36).substr(2, 9) + "-" + Date.now().toString(36);
 };
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
 function App() {
   const [sessionId, setSessionId] = useState("");
   const [messages, setMessages] = useState([]);
   const [currentStreamingText, setCurrentStreamingText] = useState("");
   const [activeCitation, setActiveCitation] = useState(null);
-  const { streamMessage, loading } = useStream("http://localhost:8000");
+  const { streamMessage, loading } = useStream(BACKEND_URL);
 
   useEffect(() => {
     setSessionId(generateUUID());
@@ -40,7 +42,7 @@ function App() {
         console.error("Chat streaming failed:", error);
         const errorMsg = {
           sender: "assistant",
-          text: `An error occurred: ${error}. Make sure the backend server is running on http://localhost:8000 and your LLM API keys are valid.`,
+          text: `An error occurred: ${error}. Make sure the backend server is running on ${BACKEND_URL} and your LLM API keys are valid.`,
           citations: [],
         };
         setMessages((prev) => [...prev, errorMsg]);
