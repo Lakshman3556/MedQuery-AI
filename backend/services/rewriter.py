@@ -9,17 +9,31 @@ elif config.LLM_PROVIDER == "groq":
     from groq import Groq
     groq_client = Groq(api_key=config.GROQ_API_KEY)
 
-def rewrite_query(query: str) -> str:
+def rewrite_query(query: str, history_string: str = "") -> str:
     """
     Rewrites vague or complex user queries to optimize them for vector database search.
+    If history is provided, resolves pronouns (e.g. "it", "he", "she", "that movie")
+    based on the conversation history to make the query standalone.
     If LLM rewrite fails, it falls back to returning the original query.
     """
     if not query.strip():
         return query
         
-    prompt = f"Rewrite this movie/cinema search query for clarity and optimal semantic search retrieval. Return ONLY the rewritten query text and nothing else: {query}"
+    if history_string.strip():
+        prompt = f"""Given the following conversation history and a follow-up query, rewrite the follow-up query to be a standalone, clear, and complete search query optimized for a vector database search.
+Resolve any pronouns, conversational shortcuts, or implicit references (like "it", "that movie", "the director", "cast") using the context of the history.
+If the query is already standalone and does not reference previous turns, just clean it up for search.
+Return ONLY the rewritten search query and nothing else. Do not add quotes.
 
-    
+CONVERSATION HISTORY:
+{history_string}
+
+FOLLOW-UP QUERY: {query}
+
+Standalone search query:"""
+    else:
+        prompt = f"Rewrite this movie/cinema search query for clarity and optimal semantic search retrieval. Return ONLY the rewritten query text and nothing else: {query}"
+
     try:
         if config.LLM_PROVIDER == "gemini":
             model = genai.GenerativeModel("gemini-1.5-flash")
