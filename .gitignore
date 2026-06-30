@@ -13,6 +13,8 @@ ENV/
 
 # Local ChromaDB Vector store data (Large local binary files)
 backend/chroma_store/
+backend/*.zip
+
 
 # IDE settings files
 .vscode/
